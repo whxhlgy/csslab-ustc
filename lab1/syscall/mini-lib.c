@@ -1,4 +1,5 @@
 #include "mini-lib.h"
+#include <stdarg.h>
 
 // see:
 //https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/
@@ -23,9 +24,45 @@ int strlen(char *s){
 }
 
 int printf(char *s, ...){
-    // Your code here:
-    // TODO();
-    return 0;
+    va_list ap;
+    int length = 0; // represent how many characters been printed
+    va_start(ap, s);
+    while (*s != '\0') {
+        if (*s == '%') {
+            s++;
+            if (*s == 's') { // for string
+                char *out = va_arg(ap, char*);
+                length += strlen(out);
+                puts(out);
+            } else {
+                puts("not implemented yet!\n");
+                exit(1);
+            }
+        } else {
+            putchar(*s);
+            length++;
+        }
+        s++;
+    }
+    return length;
+}
+
+// put a single char to stdout
+int putchar(char c) {
+    char s[2];
+    s[0] = c;
+    s[1] = '\0';
+    long r;
+    asm(CALL(SYS_WRITE)
+       "movq $1, %%rdi\n"
+       "movq %1, %%rsi\n"
+       "movq $1, %%rdx\n"
+       "syscall\n"
+       "movq %%rax, %0\n"
+       : "=r"(r)
+       : "r"(s)
+       : "%rax", "%rdi", "%rsi", "%rdx");
+    return (int)r;
 }
 
 int puts(char *s) {

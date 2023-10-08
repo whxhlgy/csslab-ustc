@@ -9,8 +9,8 @@ step:
 
 notmain:
 	#first compile the lib
-	gcc -c mini-lib.c -g -fno-builtin
-	gcc -c notmain.c -g -fno-builtin
+	gcc -c mini-lib.c -g -fno-builtin -fno-stack-protector
+	gcc -c notmain.c -g -fno-builtin -fno-stack-protector
 	ld notmain.o mini-lib.o -e notmain -o notmain.out -g
 
 clean:
