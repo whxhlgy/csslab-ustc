@@ -69,9 +69,17 @@ int alarm(unsigned int seconds){
 
 
 int sleep(struct timespec *ts, struct timespec *rem){
-    // Your code here:
-    // TODO();
-    
+    long r;
+    asm volatile(
+        CALL(SYS_SLEEP)
+        "movq %1, %%rdi\n"
+        "movq %2, %%rsi\n"
+        "syscall\n"
+        "movq %%rax, %0\n"
+        : "=r"(r)
+        : "r"(ts), "r"(rem)
+        : "%rax", "%rdi", "%rsi");
+    return (int) r;
 }
 
 
