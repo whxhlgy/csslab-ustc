@@ -45,15 +45,26 @@ int puts(char *s) {
 
 
 void exit(int status){
-    // Your code here:
-    // TODO();
-    
+    asm volatile(
+        CALL(SYS_EXIT)
+        "movl %0, %%edi\n"
+        "syscall\n"
+        :
+        : "r"(status)
+        : "%rdi");
 }
 
 int alarm(unsigned int seconds){
-    // Your code here:
-    // TODO();
-    
+    long r;
+    asm volatile(
+        CALL(SYS_ALARM)
+        "movl %1, %%edi\n"
+        "syscall\n"
+        "movq %%rax, %0\n"
+        : "=r"(r)
+        : "r"(seconds)
+        : "%rax", "%rdi");
+    return (int) r;
 }
 
 
