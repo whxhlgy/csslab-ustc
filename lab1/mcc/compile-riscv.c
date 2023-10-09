@@ -49,7 +49,9 @@ static void PUSH(){
 }
 
 static void POP(){
-    // TODO
+    stackoffset--; // Decrement stackoffset to access the top of the stack
+    sprintf(instr, "\tlw\ta2, %d(sp)\n", 4 * stackoffset);
+    emit(instr);
 }
 
 static void compile_exp(Exp_t exp){
@@ -61,7 +63,9 @@ static void compile_exp(Exp_t exp){
             break;
         }
         case EXP_VAR: {
-            // TODO
+            Exp_Var e = (Exp_Var)exp;
+            sprintf(instr, "\tli\ta1, %s\n", e->name);
+            emit(instr);
             break;
         }
         case EXP_ADD: {
@@ -74,11 +78,21 @@ static void compile_exp(Exp_t exp){
             break;
         }
         case EXP_SUB: {
-            // TODO
+            Exp_Sub e = (Exp_Sub) exp;
+            compile_exp(e->left);
+            PUSH(); 
+            compile_exp(e->right); // a1 contains right value
+            POP(); // a2 contains left value
+            emit("\tsubw\ta1, a2, a1\n"); // performs a2 - a1
             break;
         }
         case EXP_TIMES: {
-            // TODO
+            Exp_Times e = (Exp_Times) exp;
+            compile_exp(e->left);
+            PUSH(); 
+            compile_exp(e->right); 
+            POP();
+            emit("\tmulw\ta1, a1, a2\n");
             break;
         }
         case EXP_DIV: {
@@ -110,11 +124,18 @@ static void compile_stm(Stm_t stm){
             break;
         }
         case STM_PRINT: {
-            // TODO
+            Stm_Print s = (Stm_Print) stm;
+            compile_exp(s->exp);
+            sprintf(instr, "\taddw\ta2, a1, 0\n");
+            emit(instr);
+            emit("\tla\ta0, mcc_format\n");
+            emit("\tcall printf\n");
             break;
         }
         case CMD_SEQ: {
-            // TODO
+            Stm_Seq s = (Stm_Seq) stm;
+            compile_stm(s->left);
+            compile_stm(s->right);
             break;
         }
         default: {
