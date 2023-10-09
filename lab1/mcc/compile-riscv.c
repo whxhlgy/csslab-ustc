@@ -64,7 +64,7 @@ static void compile_exp(Exp_t exp){
         }
         case EXP_VAR: {
             Exp_Var e = (Exp_Var)exp;
-            sprintf(instr, "\tli\ta1, %s\n", e->name);
+            sprintf(instr, "\tlw\ta1, %s\n", e->name);
             emit(instr);
             break;
         }
@@ -126,7 +126,7 @@ static void compile_stm(Stm_t stm){
         case STM_PRINT: {
             Stm_Print s = (Stm_Print) stm;
             compile_exp(s->exp);
-            sprintf(instr, "\taddw\ta2, a1, 0\n");
+            sprintf(instr, "\taddi\ta2, a1, 0\n");
             emit(instr);
             emit("\tla\ta0, mcc_format\n");
             emit("\tcall printf\n");
