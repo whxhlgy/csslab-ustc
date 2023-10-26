@@ -1,0 +1,6 @@
+Exercise 7: Run your Web server, then enter the following command in the terminal:
+css-lab@tiger:~$ curl "http://127.0.0.1:8080/index_$(printf 'a%.0s' {1..1500}).html?"
+What do you observe? How does it threat your server? How to mitigate?
+
+服务器会收到/indexaaaaaa...（1500个a）的请求，从而占满request[BUF_SIZE]。我的减轻的方法是，如果url过长，直接拒绝请求。
+
