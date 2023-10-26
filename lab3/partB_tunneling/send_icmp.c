@@ -3,13 +3,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define TODO()\
-do{\
-    extern int printf(char *, ...);\
-    printf("Add your code here: file %s, line %d\n", __FILE__, __LINE__);\
-}while(0)
-
-
 
 
 #include <netinet/in.h>
@@ -23,7 +16,7 @@ extern unsigned char sendbuff[BUFFSIZE];
 extern unsigned char recvbuff[BUFFSIZE];
 
 extern tunnel *tnel;
-extern int socket;
+extern int sock;
 extern struct sockaddr_in dest_addr;
 extern unsigned short total_len;
 
@@ -63,11 +56,31 @@ void init_icmp_packet(const char *myname,
     inet_pton(AF_INET, dst_ip, &dest_addr.sin_addr);
 }
 
-int senddata(char *data){
-    // Exercise 2.
-    // Add your code here:
-    TODO();
+int senddata(char *data) {
+    struct icmphdr *icmph = (struct icmphdr *)(sendbuff);
+    tunnel *send_tunnel = (tunnel *)(sendbuff + sizeof(struct icmphdr));
 
+    // 设置 ICMP 包头部
+    icmph->type = ICMP_ECHO;
+    icmph->code = 0;
+    icmph->un.echo.id = htons(1);
+    icmph->un.echo.sequence = htons(1);
+
+    // 将数据拷贝到 send_tunnel->data
+    strncpy(send_tunnel->data, data, sizeof(tnel->data));
+
+    // 设置 send_tunnel 的源和目标名称信息
+    strncpy(send_tunnel->sname, tnel->sname, sizeof(send_tunnel->sname));
+    strncpy(send_tunnel->dname, tnel->dname, sizeof(send_tunnel->dname));
+
+    // 计算 ICMP 校验和
+    icmph->checksum = icmp_checksum((unsigned short *)icmph, sizeof(struct icmphdr) + sizeof(tunnel));
+
+    // 发送 ICMP 包
+    if (sendto(sock, sendbuff, sizeof(struct icmphdr) + sizeof(tunnel), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr)) == -1) {
+        perror("sendto");
+        return -1;
+    }
     return 0;
 }
 

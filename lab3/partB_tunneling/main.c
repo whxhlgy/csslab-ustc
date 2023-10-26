@@ -3,16 +3,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/socket.h>
-
-#define TODO()\
-do{\
-    extern int printf(char *, ...);\
-    printf("Add your code here: file %s, line %d\n", __FILE__, __LINE__);\
-}while(0)
-
-
-
-
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
@@ -23,12 +13,12 @@ unsigned char sendbuff[BUFFSIZE] = {'\0'};
 unsigned char recvbuff[BUFFSIZE] = {'\0'};
 
 tunnel *tnel;
-int socket;
+int sock;
 struct sockaddr_in dest_addr;
 unsigned short total_len;
 
 int main(){
-    socket = socket(PF_INET, SOCK_RAW, IPPROTO_ICMP);
+    sock = socket(PF_INET, SOCK_RAW, IPPROTO_ICMP);
 
     char myname[NAMESIZE];
     printf("Enter your name: ");
@@ -47,7 +37,7 @@ int main(){
     pid_t pid = fork();
     if(pid == 0){
         while(1){
-            int n = recvfrom(socket, recvbuff, BUFFSIZE, 0, NULL, NULL);
+            int n = recvfrom(sock, recvbuff, BUFFSIZE, 0, NULL, NULL);
             struct iphdr *iph = (struct iphdr*)(recvbuff);
             struct icmphdr *icmph = (struct icmphdr*)
                                     (recvbuff + sizeof(struct iphdr));
@@ -71,6 +61,6 @@ int main(){
         senddata(databuff);
     }
     
-    close(socket);
+    close(sock);
     return 0;
 }

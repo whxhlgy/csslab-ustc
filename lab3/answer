@@ -4,3 +4,11 @@ What do you observe? How does it threat your server? How to mitigate?
 
 服务器会收到/indexaaaaaa...（1500个a）的请求，从而占满request[BUF_SIZE]。我的减轻的方法是，如果url过长，直接拒绝请求。
 
+Exercise 1: Do we need calculate the checksum field for the ICMP header? If so, what algorithm we should use?
+
+YES, 使用互联网校验和算法
+1.	将消息分割为 16 位的字： 如果消息长度为奇数，将消息末尾填充一个零字节，使其长度为偶数。
+2.	对所有 16 位的字求和： 使用一位补码加法，将消息中所有 16 位的字相加。
+3.	将进位（溢出）折叠回去： 如果在加法过程中从最高位出现进位，将它加回到最低位。
+4.	取和的一位补码（取反加一）： 反转和的所有位，得到校验和的值。
+
