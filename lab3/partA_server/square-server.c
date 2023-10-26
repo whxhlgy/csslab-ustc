@@ -79,8 +79,8 @@ int main(){
             }
 
             // get the number from client
-            long int num = strtol(buffer, NULL, 10);
-            int n = snprintf(buffer, BUF_SIZE, "%ld", num * num);
+            double num = strtod(buffer, NULL);
+            int n = snprintf(buffer, BUF_SIZE, "%f", num * num);
             buffer[n] = '\0';
 
             // write the number to client
