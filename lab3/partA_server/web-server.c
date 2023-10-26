@@ -62,7 +62,20 @@ void serve_client(int client_sock, const char* web_root){
     else if(strcasecmp(method, "DELETE") == 0){
         // Exercise 6: Implement DELETE here
         // Add your code here:
-//        TODO();
+        if (remove(fullpath) != 0) {
+            char response[] = "HTTP/1.1 404 Not Found\r\nContent-Length: 13\r\n\r\n404 Not Found";
+            send(client_sock, response, strlen(response), 0);
+        } else {
+            char response[] = "HTTP/1.1 200 OK\r\n"
+                              "Date: Wed, 21 Oct 2015 07:28:00 GMT\r\n"
+                              "\r\n"
+                              "<html>\n"
+                              "  <body>\n"
+                              "    <h1>File deleted.</h1>\n"
+                              "  </body>\n"
+                              "</html>";
+            send(client_sock, response, strlen(response), 0);
+        }
 
     }else{
         char response[] = "HTTP/1.1 405 Method Not Allowed\r\nContent-Length: 0\r\n\r\n";
