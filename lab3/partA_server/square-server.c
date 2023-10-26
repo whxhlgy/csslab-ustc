@@ -7,13 +7,6 @@
 #include <unistd.h>
 #include <time.h>
 
-#define TODO()\
-do{\
-    extern int printf(char *, ...);\
-    printf("Add your code here: file %s, line %d\n", __FILE__, __LINE__);\
-}while(0)
-
-
 
 
 #define SERVER_PORT 12345
@@ -65,6 +58,7 @@ int main(){
             continue;
         }
 
+        // print information of client
         char client_ip[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &(client_addr.sin_addr), client_ip, INET_ADDRSTRLEN);
         printf("Accepted connection from %s:%d\n", client_ip, ntohs(client_addr.sin_port));
@@ -78,9 +72,22 @@ int main(){
                 break;
             }
             // Exercise 3. Add your code:
-            // Add your code here:
-            TODO();
+            // if the coming string is "bye", disconnect
+            if (strcmp(buffer, "bye") == 0) {
+                printf("bye to client\n");
+                break;
+            }
 
+            // get the number from client
+            long int num = strtol(buffer, NULL, 10);
+            int n = snprintf(buffer, BUF_SIZE, "%ld", num * num);
+            buffer[n] = '\0';
+
+            // write the number to client
+            if(write(client_sock_fd, buffer, strlen(buffer)) == -1){
+                perror("Write error");
+                break;
+            }
         }
 
         close(client_sock_fd);
