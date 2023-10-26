@@ -11,14 +11,8 @@
 #include <stdbool.h>
 #include <errno.h>
 
-#define TODO()\
-do{\
-    extern int printf(char *, ...);\
-    printf("Add your code here: file %s, line %d\n", __FILE__, __LINE__);\
-}while(0)
 
-
-
+void sendFile(int client_sock, FILE *file);
 
 #define SERVER_IP "127.0.0.1"
 #define SERVER_PORT 8080
@@ -46,6 +40,8 @@ void serve_client(int client_sock, const char* web_root){
     }
 
     char fullpath[256];
+    // hard code the file path
+    strcpy(fullpath, "/home/amazjj/mywebsite/index.html");
     snprintf(fullpath, sizeof(fullpath), "%s%s", web_root, path);  
 
     // Handle GET requests for serving files.
@@ -53,15 +49,20 @@ void serve_client(int client_sock, const char* web_root){
 
         // Exercise 5.
         // Add your code here:
-        TODO();
-
+        FILE *file = fopen(fullpath, "rb");
+        if (file == NULL) {
+            char response[] = "HTTP/1.1 404 Not Found\r\nContent-Length: 13\r\n\r\n404 Not Found";
+            send(client_sock, response, strlen(response), 0);
+        } else {
+            sendFile(client_sock, file);
+        }
     }
     // Handle DELETE requests for deleting files.
     
     else if(strcasecmp(method, "DELETE") == 0){
         // Exercise 6: Implement DELETE here
         // Add your code here:
-        TODO();
+//        TODO();
 
     }else{
         char response[] = "HTTP/1.1 405 Method Not Allowed\r\nContent-Length: 0\r\n\r\n";
@@ -120,10 +121,31 @@ int main(){
 
         // Challenge: multiple process
         // Add your code here:
-        TODO();
+//        TODO();
 
     }
 
     close(server_sock);
     return 0;
+}
+
+// send a file and a respond header to socket
+void sendFile(int client_sock, FILE *file) {
+    char response[1024] = {0};
+    // get the size of file
+    fseek(file, 0 , SEEK_END);
+    long fileSize = ftell(file);
+    fseek(file, 0 , SEEK_SET);
+    // send the respond
+    snprintf(response, 1024, "HTTP/1.1 200 OK\r\nContent-Length: %ld\r\nContent-Type: text/html\r\n\r\n", fileSize);
+    send(client_sock, response, strlen(response), 0);
+    // creat a buffer
+    char buffer[BUF_SIZE];
+    unsigned long cnt = 0;
+    unsigned long readBytes;
+    while (cnt < fileSize) {
+        readBytes = fread(buffer, 1, BUF_SIZE, file);
+        send(client_sock, buffer, strlen(buffer), 0);
+        cnt += readBytes;
+    }
 }
