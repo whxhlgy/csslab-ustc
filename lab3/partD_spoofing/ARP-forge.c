@@ -14,12 +14,6 @@
 #include <linux/if_packet.h>
 #include <arpa/inet.h>
 
-#define TODO()\
-do{\
-    extern int printf(char *, ...);\
-    printf("Add your code here: file %s, line %d\n", __FILE__, __LINE__);\
-}while(0)
-
 
 
 struct ifreq ifreq_c, ifreq_i, ifreq_ip; /// for each ioctl keep diffrent ifreq structure otherwise error may come in sending(sendto )
@@ -86,23 +80,18 @@ void get_arp() {
 	/* sender hardware address */
 	// Exercise 4: Complete ARP_forge.c in your project to achieve the forgery of ARP protocol packets:
  // Add your code here:
- TODO();
 
-	/* sender protocol address */
-	// Exercise 4: Complete ARP_forge.c in your project to achieve the forgery of ARP protocol packets:
- // Add your code here:
- TODO();
+    // Sender hardware address (MAC address)
+    memcpy(arp->arp_sha, ifreq_c.ifr_hwaddr.sa_data, ETH_ALEN);
 
-	/* target hardware address */
-	// Exercise 4: Complete ARP_forge.c in your project to achieve the forgery of ARP protocol packets:
- // Add your code here:
- TODO();
+    // Sender protocol address (IP address)
+    inet_pton(AF_INET, "192.168.1.1", arp->arp_spa); // Replace "192.168.1.1" with your sender IP address
 
-	/* target protocol address */
-	// Exercise 4: Complete ARP_forge.c in your project to achieve the forgery of ARP protocol packets:
- // Add your code here:
- TODO();
+    // Target hardware address is initially set to zero as it's unknown in ARP request
+    memset(arp->arp_tha, 0, ETH_ALEN);
 
+    // Target protocol address (IP address)
+    inet_pton(AF_INET, "192.168.1.2", arp->arp_tpa); // Replace "192.168.1.2" with your target IP address
 }
 
 int main() {

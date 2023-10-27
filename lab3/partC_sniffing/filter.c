@@ -9,12 +9,6 @@
 #include <netinet/udp.h>
 #include "filter.h"
 
-#define TODO()\
-do{\
-    extern int printf(char *, ...);\
-    printf("Add your code here: file %s, line %d\n", __FILE__, __LINE__);\
-}while(0)
-
 
 
 
@@ -76,8 +70,26 @@ bool filterByMacAddress(unsigned char *buffer, char *mac_addr, int type){
 bool filterByProtocol(unsigned char* buffer, int type){
     // Exercise 3: complete filter by MAC address, protocol type, and port number:
     // Add your code here:
-    TODO();
+    struct ethhdr *eth = (struct ethhdr *)(buffer);
+    int protocol_type = (int)ntohs(eth->h_proto);
 
+    if(protocol_type == ETHERTYPE_IP){
+        struct iphdr *ip = (struct iphdr*)(buffer + sizeof(struct ethhdr));
+        switch(ip->protocol){
+            case IPPROTO_ICMP:
+                if(type == 2) return true;
+                break;
+            case IPPROTO_TCP:
+                if(type == 3) return true;
+                break;
+            case IPPROTO_UDP:
+                if(type == 4) return true;
+                break;
+            default:
+                break;
+        }
+    }
+    return false;
 }
 
 /*
@@ -132,6 +144,21 @@ bool filterByIpAddress(unsigned char *buffer, char *ip_addr, int type){
 bool filterByPort(unsigned char *buffer, unsigned short port, int type){
     // Exercise 3: complete filter by MAC address, protocol type, and port number:
     // Add your code here:
-    TODO();
+    struct ethhdr *eth = (struct ethhdr *)(buffer);
+    int protocol_type = (int)ntohs(eth->h_proto);
 
+    if(protocol_type == ETHERTYPE_IP){
+        struct iphdr *ip = (struct iphdr*)(buffer + sizeof(struct ethhdr));
+        if(ip->protocol == IPPROTO_TCP){
+            struct tcphdr *tcp = (struct tcphdr*)(buffer + sizeof(struct ethhdr) + ip->ihl*4);
+            if(type == 0 && ntohs(tcp->source) == port) return true; // Filter by source port
+            if(type == 1 && ntohs(tcp->dest) == port) return true; // Filter by destination port
+        }
+        else if(ip->protocol == IPPROTO_UDP){
+            struct udphdr *udp = (struct udphdr*)(buffer + sizeof(struct ethhdr) + ip->ihl*4);
+            if(type == 0 && ntohs(udp->source) == port) return true; // Filter by source port
+            if(type == 1 && ntohs(udp->dest) == port) return true; // Filter by destination port
+        }
+    }
+    return false;
 }

@@ -13,12 +13,6 @@
 #include <linux/if_packet.h>
 #include <arpa/inet.h>
 
-#define TODO()\
-do{\
-    extern int printf(char *, ...);\
-    printf("Add your code here: file %s, line %d\n", __FILE__, __LINE__);\
-}while(0)
-
 
 
 struct ifreq ifreq_c, ifreq_i, ifreq_ip; /// for each ioctl keep diffrent ifreq structure otherwise error may come in sending(sendto )
@@ -83,8 +77,12 @@ void get_udp() {
 	struct udphdr *uh = (struct udphdr *)(sendbuff + sizeof(struct iphdr) + sizeof(struct ethhdr));
 	// Exercise 5: Write UDP_forge.c in your project to achieve the forgery of UDP protocol packets:
     // Add your code here:
-    TODO();
+    uh->source = htons(12345); // Source port
+    uh->dest = htons(54321);   // Destination port
+    uh->len = htons(sizeof(struct udphdr)); // UDP header length
+    uh->check = 0; // UDP checksum, set to 0 for now (you can calculate it if needed)
 
+    total_len += sizeof(struct udphdr);
 }
 
 unsigned short checksum(unsigned char *buf, int size) {

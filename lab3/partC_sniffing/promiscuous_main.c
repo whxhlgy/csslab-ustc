@@ -2,12 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define TODO()\
-do{\
-    extern int printf(char *, ...);\
-    printf("Add your code here: file %s, line %d\n", __FILE__, __LINE__);\
-}while(0)
-
 
 
 // socket
@@ -34,7 +28,7 @@ static char buf[BUF_SIZE];
 int raw_init (const char *device){
     // Exercise 1: Create a raw socket and enable promiscuous mode
     // Add your code here:
-    TODO();
+//    TODO();
 
 }
 
@@ -42,7 +36,7 @@ int raw_init (const char *device){
 void clear_flag(char *device, int sock_fd){
     // Exercise 1: turn off promiscuous mode
     // Add your code here:
-    TODO();
+//    TODO();
 
 }
 

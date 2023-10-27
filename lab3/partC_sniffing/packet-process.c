@@ -7,14 +7,7 @@
 #include <arpa/inet.h>
 #include <netinet/ip_icmp.h>
 #include <netinet/if_ether.h>
-#include "packetProcess.h"
-
-#define TODO()\
-do{\
-    extern int printf(char *, ...);\
-    printf("Add your code here: file %s, line %d\n", __FILE__, __LINE__);\
-}while(0)
-
+#include "packet-process.h"
 
 
 
@@ -141,17 +134,22 @@ void ARP_printer(unsigned char *buffer){
     printf("\n---------------------------ARP Packet---------------------------");
     // Exercise 2: complete the analysis function of the remaining three packets:
     // Add your code here:
-    TODO();
-
+    mac_header(buffer);
+    arp_header(buffer);
 }
+
 
 // print TCP packet
 void TCP_printer(unsigned char *buffer, int buffer_len){
     printf("\n---------------------------TCP Packet---------------------------");
     // Exercise 2: complete the analysis function of the remaining three packets:
     // Add your code here:
-    TODO();
-
+    mac_header(buffer);
+    ip_header(buffer);
+    tcp_header(buffer);
+    unsigned char *data = (buffer + ipheader_len + sizeof(struct ethhdr) + sizeof(struct tcphdr));
+    int data_len = buffer_len - (ipheader_len + sizeof(struct ethhdr) + sizeof(struct tcphdr));
+    payload(data, data_len);
 }
 
 // print UDP packet
@@ -159,8 +157,12 @@ void UDP_printer(unsigned char* buffer, int buffer_len){
     printf("\n---------------------------UDP Packet---------------------------");
     // Exercise 2: complete the analysis function of the remaining three packets:
     // Add your code here:
-    TODO();
-
+    mac_header(buffer);
+    ip_header(buffer);
+    udp_header(buffer);
+    unsigned char *data = (buffer + ipheader_len + sizeof(struct ethhdr) + sizeof(struct udphdr));
+    int data_len = buffer_len - (ipheader_len + sizeof(struct ethhdr) + sizeof(struct udphdr));
+    payload(data, data_len);
 }
 
 // packet process func
@@ -181,12 +183,13 @@ void packet_process(unsigned char* buffer, int buffer_len){
                 case IPPROTO_TCP:                                  
                 // Exercise 2: complete the analysis function of the remaining three packets:
                 // Add your code here:
-                TODO();
-
+                    tcp++;
+                    TCP_printer(buffer, buffer_len);
                 case IPPROTO_UDP:                                  
                 // Exercise 2: complete the analysis function of the remaining three packets:
                 // Add your code here:
-                TODO();
+                    udp++;
+                    UDP_printer(buffer, buffer_len);
 
                 default:
                     ++other;
@@ -196,7 +199,8 @@ void packet_process(unsigned char* buffer, int buffer_len){
         case ETHERTYPE_ARP:  
             // Exercise 2: complete the analysis function of the remaining three packets:
             // Add your code here:
-            TODO();
+            ++arp_packet;
+            ARP_printer(buffer);
 
         default:
             ++other;
