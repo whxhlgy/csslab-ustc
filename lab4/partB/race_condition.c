@@ -2,36 +2,33 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-#define TODO()\
-do{\
-    extern int printf(char *, ...);\
-    printf("Add your code here: file %s, line %d\n", __FILE__, __LINE__);\
-}while(0)
-
-
-
-
 #define NUM_THREADS 10
 #define NUM_ITERATIONS 10000
 
 long count = 0;
+pthread_mutex_t count_lock;
 
 void *increment_count(void *arg) {
     for (long i = 0; i < NUM_ITERATIONS; i++) {
+        pthread_mutex_lock(&count_lock);
         count++;
+        pthread_mutex_unlock(&count_lock);
     }
     pthread_exit(0);
 }
 
 void *decrement_count(void *arg) {
     for (long i = 0; i < NUM_ITERATIONS; i++) {
+        pthread_mutex_lock(&count_lock);
         count--;
+        pthread_mutex_unlock(&count_lock);
     }
     pthread_exit(0);
 }
 
 int main() {
     pthread_t threads[NUM_THREADS];
+    pthread_mutex_init(&count_lock, NULL);
 
     for (long i = 0; i < NUM_THREADS / 2; i++) {
         pthread_create(&threads[i], NULL, increment_count, NULL);
@@ -44,6 +41,6 @@ int main() {
     }
 
     printf("Expected count: 0 (because half increment and half decrement)\n");
-    printf("Actual count: %d\n", count);
+    printf("Actual count: %ld\n", count);
     pthread_exit(0);
 }

@@ -3,14 +3,6 @@
 #include <pthread.h>
 #include <assert.h>
 
-#define TODO()\
-do{\
-    extern int printf(char *, ...);\
-    printf("Add your code here: file %s, line %d\n", __FILE__, __LINE__);\
-}while(0)
-
-
-
 
 #define NUM_THREADS 10
 #define NUM_ITERATIONS 10000
@@ -25,22 +17,23 @@ struct counter_t shared_counter;
 void initialize_counter(struct counter_t *counter) {
     // Exercise 2: Use the mutex to solve this problem
     // Add your code here:
-    TODO();
-
+    pthread_mutex_init(&shared_counter.counter_mutex, 0);
 }
 
 void *increment_count(void *arg) {
     // Exercise 2: Use the mutex to solve this problem
     // Add your code here:
-    TODO();
-
+    pthread_mutex_lock(&shared_counter.counter_mutex);
+    shared_counter.counter++;
+    pthread_mutex_unlock(&shared_counter.counter_mutex);
 }
 
 void *decrement_count(void *arg) {
     // Exercise 2: Use the mutex to solve this problem
     // Add your code here:
-    TODO();
-
+    pthread_mutex_lock(&shared_counter.counter_mutex);
+    shared_counter.counter--;
+    pthread_mutex_unlock(&shared_counter.counter_mutex);
 }
 
 int main() {

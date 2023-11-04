@@ -1,0 +1,14 @@
+1. Compile and run the code in the file partB/race_condition.c, compile and run the code.
+What is your output? What is the expected output? How does this output generated?
+
+my output:
+Expected count: 0 (because half increment and half decrement)
+Actual count: -22508
+
+expect output:
+Expected count: 0 (because half increment and half decrement)
+Actual count: 0
+
+This output generated because race condition happens between threads, which write to a single variable simultaneously,
+and result undefined outcomes
+
