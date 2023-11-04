@@ -1,0 +1,3 @@
+/home/amazjj/csslab-ustc/lab4/partA/cmake-build-debug/CMakeFiles/square.dir
+/home/amazjj/csslab-ustc/lab4/partA/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/amazjj/csslab-ustc/lab4/partA/cmake-build-debug/CMakeFiles/rebuild_cache.dir
