@@ -1,15 +1,6 @@
 #include <stdio.h>
 #include <pthread.h>
 
-#define TODO()\
-do{\
-    extern int printf(char *, ...);\
-    printf("Add your code here: file %s, line %d\n", __FILE__, __LINE__);\
-}while(0)
-
-
-
-
 #define N 100
 #define NUM_PRODUCERS 3
 #define NUM_CONSUMERS 5
@@ -34,22 +25,33 @@ void initialize_buffer(struct buffer_t *buf) {
 
 void *producer(void *arg) {
     while(1) {
-        // Exercise 5: solve the multi-producer multi-consumer problem
-        // Add your code here:
-        TODO();
-
+        // write to buffer
+        pthread_mutex_lock(&buffer.mutex);
+        while((buffer.write_index + 1) % N == buffer.read_index) {
+            pthread_cond_wait(&buffer.cond_empty, &buffer.mutex);
+        }
+        buffer.data[buffer.write_index] = (long) arg;
+        buffer.write_index  = (buffer.write_index + 1) % N;
+        pthread_cond_signal(&buffer.cond_full);
+        pthread_mutex_unlock(&buffer.mutex);
     }
-    pthread_exit(0);
 }
 
 void *consumer(void *arg) {
     while(1) {
-        // Exercise 5: solve the multi-producer multi-consumer problem
-        // Add your code here:
-        TODO();
-
+        pthread_mutex_lock(&buffer.mutex);
+        // Wait until there is data in the buffer
+        while (buffer.read_index == buffer.write_index) {
+            // Buffer is empty, so wait for the producer to signal that the buffer is not empty
+            pthread_cond_wait(&buffer.cond_full, &buffer.mutex);
+        }
+        // Consume the data from the buffer
+        long data = buffer.data[buffer.read_index];
+        buffer.read_index = (buffer.read_index + 1) % N;
+        // Signal to the producer that the buffer has space
+        pthread_cond_signal(&buffer.cond_empty);
+        pthread_mutex_unlock(&buffer.mutex);
     }
-    pthread_exit(0);
 }
 
 int main() {

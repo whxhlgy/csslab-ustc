@@ -12,3 +12,23 @@ Actual count: 0
 This output generated because race condition happens between threads, which write to a single variable simultaneously,
 and result undefined outcomes
 
+
+2.  Finish the code in mutex.c, to protect the shared variable with mutex. Compile and run your code,
+what is the output?
+
+my output:
+Expected count: 0 (because half increment and half decrement)
+Actual count: 0
+
+3. Finish the code in spinlock.c, to protect the shared variable with spinlocks. Compile and run your code, what is the output?
+
+Expected count: 0 (because half increment and half decrement)
+Actual count: 0
+
+4. Exercise 4: In protecting shared data structures, when should we use a mutex versus a spinlock?
+There might be no simple answer to this question. Herein, we will try to answer this question according
+to one simple criteria---the execution time. Please try to measure the execution time for the programs in the above exercise
+2 and 3, respectively. Which one runs more efficiently?
+
+the mutex-lock version is more efficient
+
