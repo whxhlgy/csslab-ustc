@@ -33,11 +33,11 @@ int main(){
 
      for(int i=0; i<TESTSIZE*2; i++)
         lf_queue_enqueue(&lf_queue, 1);
-        
+
     pthread_t threads[4];
     for(int i=0; i<2; i++)
         pthread_create(&threads[i], NULL, work_queue_enqueue, (void*)0);
-    
+
     for(int i=2; i<4; i++)
         pthread_create(&threads[i], NULL, work_queue_dequeue, (void*)0);
 
@@ -45,6 +45,7 @@ int main(){
         pthread_join(threads[i], NULL);
     
     int count = lf_queue_size(&lf_queue);
+    printf("%d\n", count);
     assert(count==TESTSIZE * 2);
 
     printf("PASS!\n");
