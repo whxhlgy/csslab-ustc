@@ -2,14 +2,6 @@
 #include <stdlib.h>
 #include "concur-stack.h"
 
-#define TODO()\
-do{\
-    extern int printf(char *, ...);\
-    printf("Add your code here: file %s, line %d\n", __FILE__, __LINE__);\
-}while(0)
-
-
-
 
 void concur_stack_init(concur_stack_t *stack){
     pthread_mutex_init(&stack->mu, NULL);
@@ -17,26 +9,35 @@ void concur_stack_init(concur_stack_t *stack){
 }
 
 void concur_stack_push(concur_stack_t *stack, int value){
-    // Exercise 1: complete other operations of the concurrent stack.
-    // Add your code here:
-    TODO();
-
+    pthread_mutex_lock(&stack->mu);
+    node_t *newNode = (node_t *)malloc(sizeof(node_t));
+    newNode->next = stack->top;
+    newNode->value = value;
+    stack->top = newNode;
+    pthread_mutex_unlock(&stack->mu);
 }
 
 int concur_stack_pop(concur_stack_t *stack){
     int value = -1;
-    // Exercise 1: complete other operations of the concurrent stack.
-    // Add your code here:
-    TODO();
-
+    pthread_mutex_lock(&stack->mu);
+    if (stack->top) {
+        node_t *top = stack->top;
+        value = top->value;
+        stack->top = top->next;
+    }
+    pthread_mutex_unlock(&stack->mu);
     return value;
 }
 
 int concur_stack_size(concur_stack_t *stack){
+    pthread_mutex_lock(&stack->mu);
     int size = 0;
-    // Exercise 1: complete other operations of the concurrent stack.
-    // Add your code here:
-    TODO();
-
+    node_t *node = stack->top;
+    while (node)
+    {
+        node = node->next;
+        size += 1;
+    }
+    pthread_mutex_unlock(&stack->mu);
     return size;
 }

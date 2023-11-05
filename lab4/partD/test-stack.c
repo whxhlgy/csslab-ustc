@@ -32,6 +32,8 @@ int main(){
     for(int i=0; i<TESTSIZE * 2; i++)
         concur_stack_push(&con_stack, 1);
         
+    int test_count = concur_stack_size(&con_stack);
+    printf("%d\n", test_count);
     pthread_t threads[4];
     for(int i=0; i<2; i++)
         pthread_create(&threads[i], NULL, work_stack_push, (void*)0);
