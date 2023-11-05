@@ -2,37 +2,24 @@
 #include<stdio.h>
 #include<stdatomic.h>
 #include <assert.h>
-
-#define TODO()\
-do{\
-    extern int printf(char *, ...);\
-    printf("Add your code here: file %s, line %d\n", __FILE__, __LINE__);\
-}while(0)
-
-
-
-
 #include "spinlock.h"
 
 void spinlock_init(spinlock_t *lock){
     // Exercise 2:
     // Add your code here:
-    TODO();
-
+    atomic_init(&lock->n, 0);
 }
 
 void spinlock_lock(spinlock_t *lock){
     // Exercise 2:
     // Add your code here:
-    TODO();
-
+    while (atomic_exchange(&lock->n, 1) > 0);
 }
 
 void spinlock_unlock(spinlock_t *lock){
     // Exercise 2:
     // Add your code here:
-    TODO();
-
+    atomic_exchange(&lock->n, 0);
 }
 
 typedef struct {
@@ -46,8 +33,9 @@ void *start(){
     for(int i = 0; i < 10000; i++){
         // Exercise 2:
         // Add your code here:
-        TODO();
-
+        spinlock_lock(&counter.lock);
+        counter.num += 1;
+        spinlock_unlock(&counter.lock);
     }
     pthread_exit(0);
 }

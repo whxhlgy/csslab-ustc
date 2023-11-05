@@ -16,22 +16,21 @@ do{\
 void sema_init(sema_t *sem, int v) {
     // Exercise 2:
     // Add your code here:
-    TODO();
-
+    atomic_init(&sem->value, v);
 }
 
 void sema_wait(sema_t *sem) {
     // Exercise 2:
     // Add your code here:
-    TODO();
-
+    while (atomic_fetch_sub(&sem->value, 1) <= 0) {
+        atomic_fetch_add(&sem->value, 1);
+    }
 }
 
 void sema_post(sema_t *sem) {
     // Exercise 2:
     // Add your code here:
-    TODO();
-
+    atomic_fetch_add(&sem->value, 1);
 }
 
 typedef struct {
@@ -45,8 +44,9 @@ void *start(void *arg) {
     for (int i = 0; i < 10000; i++) {
         // Exercise 2:
         // Add your code here:
-        TODO();
-
+        sema_wait(&counter.sem);
+        counter.num++;
+        sema_post(&counter.sem);
     }
     pthread_exit(0);
 }

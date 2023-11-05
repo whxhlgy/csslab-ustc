@@ -3,14 +3,6 @@
 #include <pthread.h>
 #include <assert.h>
 
-#define TODO()\
-do{\
-    extern int printf(char *, ...);\
-    printf("Add your code here: file %s, line %d\n", __FILE__, __LINE__);\
-}while(0)
-
-
-
 
 atomic_int acnt;
 int cnt;
@@ -18,8 +10,10 @@ int cnt;
 void *start(void *thr_data) {
     // Exercise 2:
     // Add your code here:
-    TODO();
-
+    for (int i = 0; i < 10000; i++) {
+        atomic_fetch_add(&acnt, 1);
+        cnt += 1;
+    }
     return NULL;
 }
 
@@ -29,7 +23,7 @@ int main(void) {
     atomic_init(&acnt, 0);  
     cnt = 0;
     for (int n = 0; n < 10; ++n)
-        pthread_create(&pids[n], NULL, start, NULL);
+        pthread_create(&pids[n], NULL, start, (void *)10000L);
     for (int n = 0; n < 10; ++n)
         pthread_join(pids[n], NULL);
 
